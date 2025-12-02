@@ -31,6 +31,27 @@ Notes
 - Using SSH keys avoids repeated password prompts; HTTPS + Credential Manager caches credentials after first use.
 - Repo commits are stored with LF endings, ensuring cross‑platform compatibility (Windows, macOS, Linux).
 
+Git Revert / Reset Cheat Sheet
+
+View History = git log --oneline
+- Shows commit history with short hashes, dates, and messages.
+
+Undo the latest commit (keep changes) = git reset --soft HEAD~1
+- Removes the commit but keeps your edits staged.
+
+Undo the latest commit (discard changes) = git reset --hard HEAD~1
+- Removes the commit and wipes the changes.
+
+Go back to a specific commit (temporary checkout) = git checkout <commit-hash>
+- Switches to that snapshot without deleting history.
+
+Permanently reset to a specific commit = git reset --hard <commit-hash>
+- Resets your project to that commit, discarding later changes.
+
+Safely undo a commit (preserve history) = git revert <commit-hash>
+- Creates a new commit that undoes the changes, keeping history intact.
+
+
 
 
 ---
