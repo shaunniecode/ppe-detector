@@ -4,7 +4,28 @@ AI model for detecting missing PPE on construction workers using PyTorch and edg
 # PPE Dataset Preparation
 
 ## Overview
-This repository contains the initial dataset preparation for a **Personal Protective Equipment (PPE) detection project**.  
+This repository contains the initial dataset preparation for a **Personal Protective Equipment (PPE) detection project**. 
+It also documents my reproducible AI workflow setup, ensuring clean version control and cross-platform copatibility. 
+It is recorded in chronological order, with latest changes at the top, with date format dd/mm/yy
+
+03/12/25
+Development Environment Setup
+I installed Git for Windows (Git Bash) to manage version control and ensure reproducible workflows.
+Key choices during installation:
+- Editor: Visual Studio Code
+- Default branch: main
+- PATH: Git available from command line and 3rd‑party tools
+- SSH: Bundled OpenSSH
+- HTTPS: OpenSSL library
+- Line endings: Checkout Windows‑style (CRLF), commit Unix‑style (LF)
+- Terminal: MinTTY
+- Credential Manager: Enabled
+This setup ensures cross‑platform compatibility (Windows/macOS/Linux), secure GitHub integration, and clean commit history for collaborative projects.
+
+
+
+
+02/12/25
 The dataset currently includes 7 images of construction workers in **full PPE**, captured from multiple angles and perspectives.
 
 ## Current Files

@@ -1,6 +1,37 @@
 # Notes on Code for PPE Dataset
 
-This file documents every Python line we wrote so far, with simple explanations for non‑programmers.
+This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
+
+3/12/25
+Why I Installed Git (Windows, Git Bash)
+- Version control: Git tracks every change I make to my code, so I can roll back safely, compare history, and collaborate without losing work.
+- Reproducibility: My projects (like the PPE pipeline) need clean, reviewer‑friendly workflows. Git ensures every step is documented and reproducible.
+- Collaboration: GitHub integration lets me share code, receive feedback, and contribute to others’ projects.
+- Cross‑platform consistency: By setting line endings and SSH/HTTPS defaults, I’ve future‑proofed my repos to work seamlessly on Windows, macOS, and Linux.
+- Professional portfolio: Commits tagged with my identity build a verifiable record of contributions, strengthening my credibility for career transition.
+- Automation & safety: Git ties directly into CI/CD pipelines, testing, and deployment — critical for scaling my AI and edge device experiments.
+
+⚡ In short: I installed Git to make my projects reproducible, collaborative, and professional, while keeping workflows consistent across platforms.
+
+Git Installation Decisions (Windows, Git Bash)
+Installer Choices
+- Editor: Visual Studio Code
+- Initial branch name: main
+- PATH environment: Use Git from the command line and also from 3rd‑party software
+- SSH executable: Bundled OpenSSH
+- HTTPS backend: OpenSSL library (instead of Windows Secure Channel)
+- Line ending conversions: Checkout Windows‑style (CRLF), commit Unix‑style (LF)
+- Terminal emulator: MinTTY (default, recommended)
+- git pull behavior: Merge (default)
+- Credential helper: Git Credential Manager (enabled)
+- Extra options: File system caching (enabled), Symbolic links (disabled)
+Notes
+- .gitignore and .gitattributes files in repos remain untouched — installer only sets defaults.
+- Global Git identity (user.name, user.email) is important for GitHub attribution, but can be set later.
+- Using SSH keys avoids repeated password prompts; HTTPS + Credential Manager caches credentials after first use.
+- Repo commits are stored with LF endings, ensuring cross‑platform compatibility (Windows, macOS, Linux).
+
+
 
 ---
 
@@ -140,7 +171,12 @@ Summary
 
 - Documented why dataset prep comes before environment setup.
 
-- Next step: build .venv for training and connect the dataset to the model pipeline.
+- Next step: build .venv for training and connect the dataset to the model pipeline     
+
+
+
+
+
 
 
 
