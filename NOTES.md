@@ -3,6 +3,60 @@
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
 6/12/25
+
+## Environment Activation Setup (PowerShell)
+
+- **Issue:** Prompt did not show `(base)` or `(ppe-detector)` after running `conda activate`.
+- **Cause:** Custom `profile.ps1` contained a `function prompt` override that hid Conda’s environment name.
+- **Fix:** Commented out the custom prompt override in `profile.ps1` so Conda’s default hook could display environment names.
+- **Verification:**
+  - Restarted VS Code terminal → `(base)` appeared by default.
+  - Ran `conda activate ppe-detector` → prompt changed to `(ppe-detector)`.
+  - Confirmed with `python --version` and `conda list` inside the environment.
+- **Outcome:** PowerShell now shows the active Conda environment clearly, ensuring reproducibility for reviewers.
+
+6/12/25
+
+# Checkpoint: Filenames Normalized
+
+## Context
+- We installed Miniconda (Conda 25.9.1) and created a reproducible environment named `ppe-detector`.
+- Verified pandas installation inside the environment.
+- Ran `rename_script.py` to normalize filenames in the dataset.
+
+## Actions Taken
+1. **Environment Setup**
+   ```bash
+   conda create --name ppe-detector python=3.14   # isolated env for this project
+   conda activate ppe-detector                    # switch into the env
+   conda install pandas                           # install pandas for CSV handling
+
+2. Script Execution
+    ```bash
+    python rename_script.py
+# - Explanation: Script reads labels.csv, normalizes filenames (lowercase + hyphens), renames actual files in images/, and saves results to labels_normalized.csv.
+
+3. Debugging
+# Added inline debug prints to confirm each file was found and renamed:
+Row 0: old='images/front.png' -> new='images/front.png' | exists=True
+# - Explanation: exists=True confirmed the script was correctly pointing to the images/ subfolder.
+
+4. Verification
+ls images                     # list renamed files
+head labels_normalized.csv    # preview normalized CSV
+wc -l labels_normalized.csv   # count rows in CSV
+ls images | wc -l             # count files in folder
+
+# Explanation: Counts matched between CSV rows and image files, proving all files were renamed and logged
+
+Outcome: 
+# All dataset images/ were renamed to a clean, reproducible format. labels_normalized.csv created with filenames. 
+
+Next Milestone
+# Stage 1: Cropping images based on labels_normalized.csv
+# This will ensure dataset entries align with normalized schema before moving into model training.
+
+6/12/25
 # --- Conda Environment Setup for PPE Detector ---
 # This section documents how to create and manage the reproducible environment.
 
