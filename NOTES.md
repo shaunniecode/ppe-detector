@@ -2,6 +2,74 @@
 
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
+7/12/25
+
+PPE Detector Annotation Notes
+
+Environment Setup
+
+Created new Conda environment: ppe-labelimg38 with Python 3.8 for stability.
+
+Installed LabelImg successfully with dependencies (PyQt5, lxml, sip).
+
+Verified environment stability compared to previous 3.11 crashes.
+
+Annotation Workflow
+
+Images used: .png format.
+
+Annotation format: YOLO .txt files.
+
+Each image has a paired .txt file containing bounding box coordinates and class IDs.
+
+Skipped images without PPE items → no .txt file generated (treated as background).
+
+Rule: Annotate all visible PPE items; skip only if no PPE present.
+
+Label Schema
+
+helmet
+
+safetyvest
+
+right_glove
+
+left_glove
+
+right_boot
+
+left_boot
+
+safetygoggle
+
+Conventions
+
+Labels are lowercase with underscores.
+
+Left/right distinction (if used) is based on image orientation, not annotator perspective.
+
+Consistency enforced across all annotations.
+
+Verification Checklist
+
+Each .png has a matching .txt unless intentionally skipped.
+
+Spot-checked .txt files for correct class IDs and normalized coordinates.
+
+Reopened annotated images in LabelImg to confirm bounding boxes and labels.
+
+Next Steps
+
+Organize dataset into train/, val/, and test/ folders.
+
+Maintain paired image + annotation files in each split.
+
+Document schema and background rules for reproducibility.
+
+Prepare dataset for YOLOv8 training pipeline.
+
+Summary: Annotation completed, dataset saved in YOLO format with consistent schema and reproducible conventions.
+
 6/12/25
 
 ## Environment Activation Setup (PowerShell)
