@@ -2,6 +2,43 @@
 
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
+6/12/25
+# --- Conda Environment Setup for PPE Detector ---
+# This section documents how to create and manage the reproducible environment.
+
+# 1. Create a new Conda environment named "ppe-detector" with Python 3.14
+#    - Each project gets its own isolated environment
+#    - Ensures dependencies don't conflict across projects
+conda create --name ppe-detector python=3.14
+
+# 2. Activate the environment
+#    - Switches your shell into the "ppe-detector" environment
+#    - All installs and runs now happen inside this env
+conda activate ppe-detector
+
+# 3. Install pandas inside the environment
+#    - pandas is required for CSV handling in rename_script.py
+#    - Installing inside the env keeps it reproducible
+conda install pandas
+
+# 4. Verify pandas is installed
+#    - Lists all packages in the environment
+#    - Confirms pandas version for reproducibility
+conda list pandas
+
+# 5. Run the CSV renaming script
+#    - Reads labels.csv and outputs labels_normalized.csv
+#    - Uses pandas inside the env
+python rename_script.py
+
+# --- Notes ---
+# - Miniconda was installed once globally; no need to reinstall for each project.
+# - Each new project should have its own environment created with "conda create".
+# - Export environment for reviewers with:
+#     conda env export > environment.yml
+# - Reviewers can recreate your exact setup with:
+#     conda env create -f environment.yml
+
 3/12/25
 Why I Installed Git (Windows, Git Bash)
 - Version control: Git tracks every change I make to my code, so I can roll back safely, compare history, and collaborate without losing work.

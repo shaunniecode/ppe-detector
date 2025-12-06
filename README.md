@@ -8,6 +8,11 @@ This repository contains the initial dataset preparation for a **Personal Protec
 It also documents my reproducible AI workflow setup, ensuring clean version control and cross-platform copatibility. 
 It is recorded in chronological order, with latest changes at the top, with date format dd/mm/yy
 
+04/12/25
+Dataset expansion, I had used Adobe Firefly to generate several more images. Some images include multiple subjects (people), naming and labelling conventions has left me thinking how to develop what we already have for something new/er. Tempted to change the naming convention completely
+
+
+
 03/12/25
 Development Environment Setup
 I installed Git for Windows (Git Bash) to manage version control and ensure reproducible workflows.
