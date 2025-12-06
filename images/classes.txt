@@ -1,0 +1,7 @@
+helmet
+safetyvest
+right_glove
+left_glove
+right_boot
+left_boot
+safetygoggle
