@@ -2,6 +2,21 @@
 
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
+11/12/25
+
+# Dataset Notes
+
+I defined my PPE categories in `classes.txt` as: helmet, safetyvest, right_glove, left_glove, right_boot, left_boot, safetygoggle. YOLO automatically assigns IDs starting from 0 in the order above, so 0 = helmet, 1 = safetyvest, 2 = right_glove, 3 = left_glove, 4 = right_boot, 5 = left_boot, and 6 = safetygoggle. This mapping connects the numbers in my annotation files to the actual PPE items. For every image (`.png`), I have a matching `.txt` file. Each line in the `.txt` file follows the YOLO format: `class_id center_x center_y width height`. The class_id is the PPE item ID from my class list, center_x and center_y are normalized coordinates of the bounding box center (0–1), and width and height are normalized size of the bounding box (0–1). Here’s an example from my dataset (`multi-9.txt`):
+
+0 0.035473 0.512731 0.027027 0.032407   # helmet  
+1 0.018159 0.558449 0.026182 0.054398   # safetyvest  
+3 0.376689 0.799769 0.050676 0.062500   # left_glove  
+2 0.301098 0.817708 0.054899 0.061343   # right_glove  
+5 0.279561 0.887731 0.060811 0.055556   # left_boot  
+4 0.195101 0.890625 0.038851 0.065972   # right_boot  
+
+This shows multiple PPE items in one image. Each line is one bounding box, and if there are multiple people in an image, I simply have more lines — YOLO handles that naturally. I organized my dataset into three folders: `train/` for the majority of images and annotations, `val/` for the validation subset, and `test/` for the final evaluation subset. Each folder contains `.png` images and their paired `.txt` files, with no duplicates across folders so each split is unique. My setup is correct because I have a clear class list (`classes.txt`), my `.txt` files use the proper YOLO format (class ID + normalized coordinates), each image can have multiple PPE items and I annotated them correctly, and my dataset is split into train/val/test exactly as YOLO expects. This structure ensures my dataset is valid, reproducible, and ready for training.
+
 7/12/25
 
 PPE Detector Annotation Notes
