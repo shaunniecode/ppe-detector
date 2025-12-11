@@ -4,6 +4,163 @@ This file documents every code line we wrote so far, with simple explanations fo
 
 11/12/25
 
+# PPE-DETECTOR Training Session (11 Dec 2025)
+
+## Dataset Setup
+- Created dataset/ folder with YOLO structure:
+  dataset/
+    train/images (12 PNGs)
+    train/labels (12 TXTs)
+    val/images (3 PNGs)
+    val/labels (3 TXTs)
+    test/images (2 PNGs)
+    test/labels (2 TXTs)
+
+- Verified .txt labels contained real bounding boxes.
+- Confirmed dataset.yml points to dataset/train/images, dataset/val/images, dataset/test/images.
+
+## Classes
+- Defined 7 PPE classes:
+  0 helmet
+  1 safetyvest
+  2 right_glove
+  3 left_glove
+  4 right_boot
+  5 left_boot
+  6 safetygoggle
+
+## Validation
+- Ran: yolo val model=yolov8n.pt data=dataset.yml imgsz=640 batch=1
+- Output showed COCO classes (person, car, etc.) because pretrained weights were COCO-trained.
+- Dataset parsed correctly (no corrupt files, labels found).
+
+## Training
+- Ran smoke test: yolo train model=yolov8n.pt data=dataset.yml epochs=2 imgsz=640 device=cpu
+- Training completed successfully:
+  - Loss values decreased slightly.
+  - Metrics (Precision, Recall, mAP) = 0 (expected with tiny dataset + 2 epochs).
+- Validation after training listed PPE classes correctly but showed 0 detections.
+
+## Key Findings
+- Pipeline is wired up correctly: dataset, labels, config, training loop all functional.
+- Safety goggles not detected because only 1 annotated instance exists.
+- With such a small dataset (17 images), YOLO cannot generalize yet.
+
+11/12/25
+
+[2025-12-11] Baseline environment locked:
+Python 3.13.11, NumPy 2.3.5, Torch 2.9.1+cpu, TorchVision 0.24.1+cpu, TorchAudio 2.9.1+cpu.
+Verified torch.cuda.is_available() = False.
+
+
+
+11/12/25
+
+# Environment Notes — December 2025
+
+## PyTorch + CUDA Compatibility
+- Installed: PyTorch 2.1.2+cu121
+- GPU detected: NVIDIA GeForce RTX 5070 Laptop (CUDA capability sm_120)
+- Warning: Current PyTorch build supports sm_50–sm_90 only. sm_120 is **not yet supported**.
+- Result: GPU kernels fail with `RuntimeError: no kernel image is available for execution on the device`.
+
+## Decision
+- For reproducibility and stability, we will **run all training on CPU** until PyTorch adds sm_120 support.
+- `smoke_test.py` updated to force CPU execution (no CUDA calls).
+- NumPy pinned to 1.26.4 for compatibility with PyTorch 2.1.2.
+
+## Next Steps
+- Monitor PyTorch nightly/stable releases for sm_120 support.
+- Once supported, re‑enable GPU training and update NOTES.md.
+
+11/12/25
+
+PyTorch 2.1.2+cu121 installed
+NumPy pinned to 1.26.4 for compatibility
+GPU detected: NVIDIA GeForce RTX 5070 Laptop (sm_120)
+Warning: sm_120 not yet supported in PyTorch 2.1.2 — falls back to PTX
+
+
+11/12/25
+
+Environment Strategy: Python 3.8 vs 3.9
+
+Python 3.8 — ppe-labelimg38
+
+Purpose: Stable baseline for annotation and reproducibility
+
+Tools: LabelImg, dataset preparation, schema documentation
+
+Strengths:
+
+Proven compatibility with older packages
+
+Documented in NOTES.md for reproducibility
+
+Safe fallback if newer environments break
+
+Usage:
+
+Annotation workflows
+
+Reviewer-friendly reproducibility
+
+Legacy compatibility testing
+
+Python 3.9 — ppe-train39
+
+Purpose: Training environment with GPU acceleration
+
+Tools: PyTorch nightly, YOLO training, CUDA-enabled workflows
+
+Strengths:
+
+Supports RTX 5070 (sm_120) via nightly builds
+
+Future-proof for modern AI frameworks
+
+Clean separation from annotation env
+
+Usage:
+
+YOLO smoke tests
+
+GPU-accelerated training
+
+Experimental workflows
+
+Workflow Diagram
+
+                ┌───────────────────────────────┐
+                │   ppe-labelimg38 (Python 3.8) │
+                │   --------------------------- │
+                │   • Stable baseline           │
+                │   • LabelImg annotation       │
+                │   • Reproducibility (NOTES.md)│
+                │   • Legacy compatibility      │
+                └───────────────────────────────┘
+                           │
+                           │  (documented, safe fallback)
+                           ▼
+                ┌───────────────────────────────┐
+                │   ppe-train39 (Python 3.9)    │
+                │   --------------------------- │
+                │   • GPU training (RTX 5070)   │
+                │   • PyTorch nightly support   │
+                │   • YOLO smoke tests          │
+                │   • Future-proof experiments  │
+                └───────────────────────────────┘
+
+Summary
+
+Keep 3.8 env for annotation and reproducibility.
+
+Use 3.9 env for GPU-accelerated training.
+
+Document both in NOTES.md to show clear separation of roles and reproducibility strategy.
+
+11/12/25
+
 # Dataset Notes
 
 I defined my PPE categories in `classes.txt` as: helmet, safetyvest, right_glove, left_glove, right_boot, left_boot, safetygoggle. YOLO automatically assigns IDs starting from 0 in the order above, so 0 = helmet, 1 = safetyvest, 2 = right_glove, 3 = left_glove, 4 = right_boot, 5 = left_boot, and 6 = safetygoggle. This mapping connects the numbers in my annotation files to the actual PPE items. For every image (`.png`), I have a matching `.txt` file. Each line in the `.txt` file follows the YOLO format: `class_id center_x center_y width height`. The class_id is the PPE item ID from my class list, center_x and center_y are normalized coordinates of the bounding box center (0–1), and width and height are normalized size of the bounding box (0–1). Here’s an example from my dataset (`multi-9.txt`):

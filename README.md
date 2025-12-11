@@ -8,6 +8,50 @@ This repository contains the initial dataset preparation for a **Personal Protec
 It also documents my reproducible AI workflow setup, ensuring clean version control and cross-platform copatibility. 
 It is recorded in chronological order, with latest changes at the top, with date format dd/mm/yy
 
+11/12/25
+
+# PPE-DETECTOR Training Session (11 Dec 2025)
+
+## Dataset Setup
+- Created dataset/ folder with YOLO structure:
+  dataset/
+    train/images (12 PNGs)
+    train/labels (12 TXTs)
+    val/images (3 PNGs)
+    val/labels (3 TXTs)
+    test/images (2 PNGs)
+    test/labels (2 TXTs)
+
+- Verified .txt labels contained real bounding boxes.
+- Confirmed dataset.yml points to dataset/train/images, dataset/val/images, dataset/test/images.
+
+## Classes
+- Defined 7 PPE classes:
+  0 helmet
+  1 safetyvest
+  2 right_glove
+  3 left_glove
+  4 right_boot
+  5 left_boot
+  6 safetygoggle
+
+## Validation
+- Ran: yolo val model=yolov8n.pt data=dataset.yml imgsz=640 batch=1
+- Output showed COCO classes (person, car, etc.) because pretrained weights were COCO-trained.
+- Dataset parsed correctly (no corrupt files, labels found).
+
+## Training
+- Ran smoke test: yolo train model=yolov8n.pt data=dataset.yml epochs=2 imgsz=640 device=cpu
+- Training completed successfully:
+  - Loss values decreased slightly.
+  - Metrics (Precision, Recall, mAP) = 0 (expected with tiny dataset + 2 epochs).
+- Validation after training listed PPE classes correctly but showed 0 detections.
+
+## Key Findings
+- Pipeline is wired up correctly: dataset, labels, config, training loop all functional.
+- Safety goggles not detected because only 1 annotated instance exists.
+- With such a small dataset (17 images), YOLO cannot generalize yet.
+
 04/12/25
 Dataset expansion, I had used Adobe Firefly to generate several more images. Some images include multiple subjects (people), naming and labelling conventions has left me thinking how to develop what we already have for something new/er. Tempted to change the naming convention completely
 

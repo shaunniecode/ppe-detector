@@ -1,0 +1,20 @@
+# YOLO dataset configuration
+
+# Paths to your dataset splits (relative to repo root)
+train: dataset/train
+val: dataset/val
+test: dataset/test
+
+# Number of classes
+nc: 7
+
+# Class names (must match your classes.txt order)
+names: [
+  'helmet',
+  'safetyvest',
+  'right_glove',
+  'left_glove',
+  'right_boot',
+  'left_boot',
+  'safetygoggle'
+]
