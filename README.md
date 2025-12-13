@@ -8,6 +8,53 @@ This repository contains the initial dataset preparation for a **Personal Protec
 It also documents my reproducible AI workflow setup, ensuring clean version control and cross-platform copatibility. 
 It is recorded in chronological order, with latest changes at the top, with date format dd/mm/yy
 
+13/12/25
+
+PPE Detector — Training Session (Dec 2025)
+Overview
+I ran a 30‑minute YOLOv8n training session on my PPE dataset. The run was configured for epochs=300 at imgsz=640, but training stopped early at 175 epochs due to no improvement in the last 100 epochs. The best checkpoint was saved at epoch 75 (best.pt).
+
+Dataset
+- Validation set: 10 images, 133 labeled objects.
+- Classes: helmet, safety vest, right glove, left glove, right boot, left boot, safety goggle.
+- Instances per class (val):
+- Helmet: 37
+- Safety vest: 40
+- Right glove: 12
+- Left glove: 18
+- Right boot: 8
+- Left boot: 13
+- Safety goggle: 5
+
+Results (best.pt at epoch 75)
+- Overall metrics:
+- Precision: 0.892
+- Recall: 0.582
+- mAP@50: 0.692
+- mAP@50‑95: 0.38
+- Per class performance:
+- Helmet → P=0.901, R=0.892, mAP@50=0.939
+- Safety vest → P=0.979, R=1.0, mAP@50=0.995
+- Right glove → P=0.907, R=0.81, mAP@50=0.795
+- Left glove → P=1.0, R=0.211, mAP@50=0.635
+- Right boot → P=0.764, R=0.625, mAP@50=0.74
+- Left boot → P=0.692, R=0.538, mAP@50=0.686
+- Safety goggle → P=1.0, R=0.0, mAP@50=0.056
+
+Observations
+- Helmets and vests are performing very well — strong precision and recall.
+- Gloves and boots show moderate learning, but recall is inconsistent (left glove recall is very low).
+- Safety goggles are the weakest class: precision is high but recall is zero, meaning the model predicts them only when extremely confident, and misses most instances.
+- Early stopping suggests the model plateaued quickly, which is common with small datasets and CPU training.
+
+Recommendations
+- Safety goggles: Add at least 30–50 more diverse images (different angles, lighting, contexts).
+- Gloves: Expand to 40–50 images each to balance recall.
+- Boots: Increase to 30–40 images each to stabilize detection.
+- Helmets and vests: Already strong, but adding another 20–30 images each will help generalization.
+- Overall dataset size: To push mAP@50‑95 above 0.6, I should aim for ~300–400 total labeled instances, balanced across all classes.
+
+
 11/12/25
 
 # PPE-DETECTOR Training Session (11 Dec 2025)
