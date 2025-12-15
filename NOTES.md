@@ -2,6 +2,58 @@
 
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
+15/12/25
+
+Training Session — Pipeline Smoke Test (Dec 2025)
+
+Purpose
+
+Ran a 300-epoch training cycle to validate pipeline stability.
+
+Training stopped early at epoch 175 due to patience (no improvement for 100 epochs).
+
+Goal was to confirm end-to-end workflow, not to improve results.
+
+Setup
+
+Model: YOLOv8n
+
+Epochs: 300 (early stopped at 175)
+
+Image size: 640
+
+Device: CPU (Ryzen AI 9 365)
+
+Environment: .venv (Python 3.8, Torch 2.4.1+cpu)
+
+Observations
+
+Results matched the earlier 30-minute run.
+
+Best checkpoint saved at epoch 75 (best.pt).
+
+Early stopping confirmed pipeline is functioning correctly.
+
+No new insights gained; this was a reproducibility check.
+
+Notes
+
+Pipeline runs cleanly from activation of .venv through training and logging.
+
+Git commit optional: no dataset or config changes.
+
+Documented here for traceability without cluttering commit history.
+
+Next Steps
+
+Focus on dataset expansion (goggles, gloves, boots) to extend learning.
+
+Consider GPU training for faster convergence and larger image sizes.
+
+Adjust patience if longer plateau exploration is desired.
+
+Continue logging smoke tests separately from major training runs.
+
 13/12/25
 
 Training Session Log — PPE Detector (30‑min run)
