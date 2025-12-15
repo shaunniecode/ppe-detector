@@ -2,6 +2,55 @@
 
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
+16/12/25
+
+# Project Notes – PPE Detector Simulation
+
+## MQTT Simulation Flow
+- **Publisher (publisher_sim.py)**
+  - Reads `images/sim1.png`, encodes to base64, publishes to topic `ppe/camera/esp32cam/frame`.
+  - Added `client.loop(1)` after `publish()` to flush the message before disconnecting.
+  - Verified in Mosquitto logs: `Received PUBLISH` now appears.
+
+- **Subscriber (subscriber.py)**
+  - Subscribes to `ppe/camera/esp32cam/frame`.
+  - Decodes base64 payload, reconstructs image with OpenCV, passes to `run_inference_stub`.
+  - Confirmed detection output: `Detections: helmet (94.8%)`.
+
+- **Broker (Mosquitto)**
+  - Running in local-only mode on port 1883.
+  - Logs confirm subscriber receives messages after publisher fix.
+
+## Inference Stub
+- File: `run_inference_stub.py`
+- Provides a fake detection result for testing:
+  ```python
+  def run_inference(img):
+      return [("helmet", 0.948)]
+
+- This ensures the MQTT flow can be validated without requiring a full YOLO model.
+
+Key Lessons
+- publish() is asynchronous; without loop() or a delay, messages may not flush.
+- Always run subscriber before publisher to avoid missing QoS 0 messages.
+- Absolute paths for images prevent ambiguity when running scripts from different directories.
+
+Next Steps
+- Replace run_inference_stub.py with actual YOLO inference.
+- Add multi-topic subscriber support for multiple edge devices (ESP32, Jetson).
+- Implement logging/timestamping for detections.
+
+
+
+16/12/25
+
+## Smoke Test – 16 Dec 2025
+- Ran smoke_test.py inside Python 3.8 `.venv`.
+- Torch version: 2.4.1+cpu, CUDA not available (CPU inference only).
+- Verified matrix multiply result printed successfully.
+- Confirms PyTorch environment is stable and reproducible.
+- Next step: integrate run_inference into MQTT subscriber for simulation pipeline.
+
 15/12/25
 
 Training Session — Pipeline Smoke Test (Dec 2025)

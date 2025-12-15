@@ -8,6 +8,39 @@ This repository contains the initial dataset preparation for a **Personal Protec
 It also documents my reproducible AI workflow setup, ensuring clean version control and cross-platform copatibility. 
 It is recorded in chronological order, with latest changes at the top, with date format dd/mm/yy
 
+16/12/25
+
+# PPE Detector
+
+This simulates an ESP32-CAM publishing frames to an MQTT broker, with a subscriber decoding and running inference. It is part of the same PPE Detector pipeline that includes dataset training and inference experiments.
+
+## Components
+- **publisher_sim.py** — Publishes a test image (`images/sim1.png`) to MQTT.  
+- **subscriber.py** — Subscribes to topic, decodes payload, reconstructs image, runs inference.  
+- **run_inference_stub.py** — Temporary stub returning static detection result (`helmet (94.8%)`).  
+- **Mosquitto Broker** — Local broker (`localhost:1883`).
+
+## Usage
+1. Start Mosquitto broker: mosquitto -v
+2. Run Subscriber: python subscriber.py
+3. In another terminal, run publisher: python publisher_sim.py
+4. Example output: Message received on ppe/camera/esp32cam/frame Detections: helmet (94.8%)
+
+Notes- Publisher requires client.loop(1) after publish() to flush message.
+- Subscriber must be running before publisher to capture QoS 0 messages.
+- Current inference is stubbed; replace with YOLO model for real PPE detection.
+
+Next Steps- Integrate YOLOv8 for actual inference.
+- Expand dataset for weak classes (gloves, boots, goggles).
+- Add logging and visualization of detections.
+- Configure broker for remote edge devices (ESP32, Jetson Nano)
+
+
+
+
+
+
+
 13/12/25
 
 PPE Detector — Training Session (Dec 2025)
