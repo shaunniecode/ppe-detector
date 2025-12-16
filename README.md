@@ -8,6 +8,66 @@ This repository contains the initial dataset preparation for a **Personal Protec
 It also documents my reproducible AI workflow setup, ensuring clean version control and cross-platform copatibility. 
 It is recorded in chronological order, with latest changes at the top, with date format dd/mm/yy
 
+17/12/25
+
+# PPE Detector — Inference & Visualization Exercise
+
+## Overview
+Tonight’s exercise focused on testing the trained YOLO checkpoint (`best.pt`) against unseen images, documenting both textual detections and visual outputs. Two scripts were created and used:
+
+- **file_inference.py** — minimal, reproducible script that loads the trained checkpoint and prints detections `(label, confidence)` for unseen images.
+- **visualize_inference.py** — extended script that adds bounding boxes and labels to detections, saving annotated images for visual validation.
+
+The goal was to validate generalization, identify failure modes, and record reasoning for missed or duplicate detections.
+
+---
+
+## Results
+
+### sim1.png
+- **Script used:** `file_inference.py` and `visualize_inference.py`
+- **Model output:** 2 helmets, 4 safety vests.
+- **True count:** 3 helmets, 4 vests (one helmet missed).
+- **Outliers removed:**  
+  - Missing helmet (not detected).  
+  - Obscured vest (0.318 confidence).  
+- **Remaining confidences:** 0.633, 0.761, 0.772, 0.790  
+- **Median confidence:** **0.767**
+- **Finding:** The model missed a clear white helmet against the sky. Likely due to low contrast with background and partial occlusion. The small vest behind it was detected instead, showing dataset bias toward high‑visibility vests.
+
+---
+
+### sim2.png
+- **Script used:** `file_inference.py` and `visualize_inference.py`
+- **Model output:** 8 helmets, 7 safety vests.
+- **True count:** 7 helmets, 7 vests (one helmet double detected).
+- **Outlier removed:**  
+  - Duplicate helmet (0.378 confidence) caused by yellow pillar background.  
+- **Remaining confidences:** 0.665, 0.755, 0.772, 0.790, 0.817, 0.833, 0.857, 0.925, 0.928, 0.932, 0.938, 0.948, 0.952, 0.959  
+- **Median confidence:** **0.891**
+- **Finding:** Strong detections overall. Background interference (yellow pillar) caused a duplicate helmet detection. Confidence scores were consistently high, showing better generalization than sim1.
+
+---
+
+## Key Insights
+- **Contrast matters:** White helmets against bright sky are harder to detect than high‑visibility vests.  
+- **Occlusion sensitivity:** Partial overlaps reduce confidence or suppress detections.  
+- **Background interference:** Structures (like pillars) can trigger duplicate detections.  
+- **Median comparison:**  
+  - sim1 median = **0.767** (weaker detections).  
+  - sim2 median = **0.891** (stronger detections).  
+- **Next steps:** Expand dataset with white helmets in bright conditions and helmets against varied backgrounds to reduce missed and duplicate detections.
+
+---
+
+## Artifacts
+- `file_inference.py` → textual detections.  
+- `visualize_inference.py` → annotated outputs with bounding boxes.  
+- `annotated_output.jpg` → sim1 visualization.  
+- `annotated_output2.jpg` → sim2 visualization.  
+- `NOTES.md` → detailed reasoning and thought process.  
+- `README.md` → summarized exercise with results and findings.
+
 16/12/25
 
 # PPE Detector

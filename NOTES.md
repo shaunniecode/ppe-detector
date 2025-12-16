@@ -2,6 +2,156 @@
 
 This file documents every code line we wrote so far, with simple explanations for non‑programmers. It also explains decisions and thought processes throughtout the project. It is in chronological order, i.e. most recent changes are at the top of the file.
 
+17/12/25
+
+🧾 sim2.png Results
+Raw detections (15 total):
+- Helmets: 0.959, 0.952, 0.948, 0.938, 0.833, 0.817, 0.665, 0.378
+- Vests: 0.932, 0.928, 0.925, 0.857, 0.790, 0.772, 0.755
+Outlier removed:
+- Double detection helmet (0.378) → true count is 7 helmets, 7 vests.
+Remaining confidences (14 total):
+- Helmets: 0.959, 0.952, 0.948, 0.938, 0.833, 0.817, 0.665
+- Vests: 0.932, 0.928, 0.925, 0.857, 0.790, 0.772, 0.755
+Sorted confidences:
+0.665, 0.755, 0.772, 0.790, 0.817, 0.833, 0.857, 0.925, 0.928, 0.932, 0.938, 0.948, 0.952, 0.959
+Median (14 values):
+Average of 7th and 8th values → (0.857 + 0.925) / 2 = 0.891
+
+🧾 sim1.png Results
+Raw detections (6 total):
+- Helmets: 0.790, 0.633
+- Vests: 0.772, 0.761, 0.707, 0.318
+Outliers removed:
+- Missing helmet (not detected at all).
+- Obscured vest (0.318, very low confidence).
+Remaining confidences (4 total):
+- Helmets: 0.790, 0.633
+- Vests: 0.772, 0.761
+Sorted confidences:
+0.633, 0.761, 0.772, 0.790
+Median (4 values):
+Average of 2nd and 3rd values → (0.761 + 0.772) / 2 = 0.767
+
+### Median Confidence Analysis
+
+- **sim2.png (true 7 helmets, 7 vests):**
+  - Outlier removed: duplicate helmet (0.378).
+  - Median confidence = **0.891**.
+  - Interpretation: detections are generally strong, clustered around high confidence.
+
+- **sim1.png (true 3 helmets, 4 vests):**
+  - Outliers removed: missing helmet, obscured vest (0.318).
+  - Median confidence = **0.767**.
+  - Interpretation: detections are weaker overall, with lower confidence spread compared to sim2.png.
+
+17/12/25
+
+## Inference Results — sim2.png
+
+### Observations
+- Model initially reported 8 helmets and 7 safety vests.
+- On review, one helmet was **double detected** because of a yellow pillar directly behind it.
+- True count: **7 helmets** and **7 safety vests**.
+- Annotated image saved as `annotated_output2.jpg`.
+
+### My Thoughts
+- The duplicate detection shows how background structures (like the yellow pillar) can confuse the model into proposing multiple bounding boxes for the same object.
+- This highlights a limitation in non‑maximum suppression (NMS): if two overlapping proposals differ enough in confidence or position, both can survive.
+- Compared to sim1.png, detections here were stronger overall, but the double detection reminds me that background context can still mislead the model.
+
+### My Reasoning
+- **Background interference:** The yellow pillar provided strong edges and color contrast, which the model may have misinterpreted as part of another helmet.
+- **NMS behavior:** If two bounding boxes overlap but aren’t close enough in IoU, NMS may keep both, resulting in duplicates.
+- **Dataset bias:** Training data may not have enough examples of helmets against similar colored or structured backgrounds, so the model struggles to distinguish helmet vs. pillar.
+- **Confidence spread:** The duplicate helmet had lower confidence (0.378), suggesting the model was uncertain but still proposed it.
+
+### Takeaway
+- True detections: 7 helmets, 7 vests.
+- Double detection occurred due to background confusion with a yellow pillar.
+- Next step: expand dataset with helmets against varied backgrounds (including pillars, poles, and bright structures) to reduce false duplicates.
+
+
+
+17/12/25
+
+Notes update on inference results
+- Observation: On images\sim1.png, the model detected 2 helmets and 4 safety vests. It missed a very clear white helmet in the center, yet picked up a small, partially obscured safety vest behind it with low confidence (0.318).
+- Immediate thought: It seems plausible that the bright, saturated vest (even though smaller) was more recognizable than the white helmet, which may have blended with the sky due to similar color/brightness.
+- Screenshot artifact: Annotated output saved as annotated_output.jpg confirms bounding boxes align with the printed detections.
+
+My reasoning on why this happened
+- Color and contrast cues: I suspect the white helmet had low contrast against the bright sky, reducing edge definition and gradient cues the model relies on. In contrast, the vest’s saturated, high-contrast color likely produced stronger feature activations, even at a smaller scale.
+- Occlusion and shape cues: The helmet’s contour may have been partially occluded by the person behind it, disrupting its canonical shape; the vest’s rectangular, high-saturation panel remained visible enough to trigger detection.
+- Scale sensitivity: At input size 384×640, small objects can be retained while mid-size objects with weak contrast are suppressed during feature downsampling. The vest’s compact, high-contrast patch may have survived downsampling better than the low-contrast helmet.
+- NMS and confidence dynamics: If overlapping or adjacent boxes were proposed, non-maximum suppression may have favored the vest proposals due to slightly higher local confidence, while borderline helmet proposals were suppressed.
+- Dataset bias and class balance: My training data may have more varied, high-visibility vests than white helmets against bright backgrounds, biasing the model toward vest features. Helmets in my dataset might skew toward darker colors or indoor lighting, reducing generalization to white helmets under outdoor sky.
+- Augmentation coverage: If augmentations didn’t sufficiently cover high-brightness backgrounds, glare, or washed-out edges, the model could underperform on white objects against sky.
+- Threshold and postprocessing: The helmet proposals could have landed just below the confidence threshold, while the vest—despite being small—cleared the threshold due to stronger color cues.
+
+- My finding: I noticed the model completely missed a clear white helmet in the center but detected a very small, partially obscured safety vest behind it at 0.318 confidence.
+- My hypothesis: The vest’s bright, saturated color is more distinctive than the white helmet against the sky. The helmet likely blended with the background, reducing edge and contrast cues, while the vest’s high-contrast patch triggered stronger features even at a smaller scale.
+- My reasoning: Occlusion disrupted the helmet’s shape, and at 384×640 the vest’s compact, high-contrast region survived downsampling better than the helmet’s low-contrast edges. NMS may have suppressed weak helmet proposals. My dataset might also be biased toward vests or darker helmets, and my augmentations may not sufficiently cover bright-sky scenarios.
+- My takeaway: High-visibility PPE (vests) can be easier for the model than low-contrast helmets against bright backgrounds. I’ll need to harden the model against white-on-bright conditions and partial occlusions.
+
+- Next test: switched to images\sim2.png to compare detection behavior against sim1.png.
+- Reason: sim1.png showed a missed helmet and a low-confidence vest detection; sim2.png will help confirm whether the issue is dataset bias, color/contrast, or occlusion sensitivity.
+
+
+
+# NOTES.md — 17 Dec 2025
+
+## Context
+Working on PPE detector pipeline with YOLO. Built `file_inference.py` first to confirm detections, then extended into `visualize_inference.py` for annotated outputs.
+
+---
+
+## Decisions
+
+### 1. Building `file_inference.py`
+- **Goal:** Establish a minimal, reproducible script to load my trained checkpoint (`best.pt`) and run inference on an unseen image (`images\sim1.png`).
+- **Reasoning:**  
+  - Needed a clean baseline to verify that the model loads correctly and produces detections.  
+  - Printing `(label, confidence)` pairs gave me a human‑readable log of what the model saw.  
+  - This atomic step ensured reproducibility before adding complexity.
+
+---
+
+### 2. Extending to `visualize_inference.py`
+- **Goal:** Move beyond printed detections to visual confirmation of bounding boxes and labels.  
+- **Reasoning:**  
+  - Visualization provides intuitive validation — I can *see* whether detections align with PPE items.  
+  - Annotated outputs (`annotated_output.jpg`) serve as artifacts for reviewers and Git commits.  
+  - Separating into a new file keeps the workflow modular: `file_inference.py` for textual logs, `visualize_inference.py` for graphical outputs.
+
+---
+
+### 3. Choosing `cv2.destroyAllWindows()`
+- **Goal:** Ensure clean closure of OpenCV windows after visualization.  
+- **Reasoning:**  
+  - Without `destroyAllWindows()`, OpenCV windows can linger, causing resource leaks or blocking subsequent runs.  
+  - Explicitly closing windows maintains reproducibility and prevents confusion during iterative testing.  
+  - This choice reflects my workflow discipline: every process should end cleanly, leaving no hidden state.
+
+---
+
+## Thought Process
+- Started with questions: *Can my model load and detect reliably?*  
+- Answered by building `file_inference.py` — print‑only, atomic, reproducible.  
+- Next question: *How do I confirm detections visually?*  
+- Answered by creating `visualize_inference.py` — bounding boxes, labels, annotated outputs.  
+- Final consideration: *How do I prevent clutter or leaks when showing images?*  
+- Answered by using `cv2.destroyAllWindows()` — ensures clean teardown after each visualization.
+- Important detail: the window only closes after a keypress is registered inside the OpenCV image window (focus matters — e.g. pressing space while the cursor is in the window), otherwise it stays open until you interact with it.
+
+---
+
+## Next Steps
+1. Run `visualize_inference.py` on `images\sim1.png`.  
+2. Save and commit `annotated_output.jpg` + script to Git.  
+3. Journal milestone in NOTES.md.  
+4. Prepare for MQTT transmission of annotated images.
+
 16/12/25
 
 # Project Notes – PPE Detector Simulation
